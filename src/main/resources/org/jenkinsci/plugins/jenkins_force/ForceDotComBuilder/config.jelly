@@ -9,7 +9,22 @@
     Creates a text field that shows the value of the "name" property.
     When submitted, it will be passed to the corresponding constructor parameter.
   -->
-  <f:entry title="Name" field="name">
+  <f:entry title="Task" field="task">
+    <select name="task">
+      <option value="push">Push</option>
+      <option value="pull">Pull</option>
+    </select>
+  </f:entry>
+  <f:entry title="Username" field="username">
     <f:textbox />
+  </f:entry>
+  <f:entry title="Password" field="password">
+    <f:textbox />
+  </f:entry>
+  <f:entry title="Environment" field="env">
+    <select name="env">
+      <option value="login">Production</option>
+      <option value="test">Sandbox</option>
+    </select>
   </f:entry>
 </j:jelly>
