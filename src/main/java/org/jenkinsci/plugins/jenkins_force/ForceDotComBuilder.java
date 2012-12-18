@@ -32,33 +32,59 @@ import java.io.IOException;
  *
  * @author Kohsuke Kawaguchi
  */
-public class HelloWorldBuilder extends Builder {
+public class ForceDotComBuilder extends Builder {
 
-    private final String name;
+    private final String username;
+    private final String password;
+    private final String task;
+    private final String env;
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public HelloWorldBuilder(String name) {
-        this.name = name;
+    public ForceDotComBuilder(String task, String username, String password, String env) {
+        this.username = username;
+        this.password = password;
+        this.task = task;
+        this.env = env;
     }
 
     /**
      * We'll use this from the <tt>config.jelly</tt>.
      */
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
+    public String getPassword() {
+        return password;
+    }
+    public String getTask() {
+        return task;
+    }
+    public String getEnv() {
+        return env;
+    }
+/*
+    public ListBoxModel doFillTaskItems() {
+        ListBoxModel items = new ListBoxModel();
 
+        items.add("Push", "push");
+        items.add("Pull", "pull");
+
+        return items;
+    }
+*/
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
         // This is where you 'build' the project.
         // Since this is a dummy, we just say 'hello world' and call that a build.
 
         // This also shows how you can consult the global configuration of the builder
+	String message = "Login to " + username + ":" + env + ".salesforce.com with password " + password + " for " + task;
+
         if (getDescriptor().getUseFrench())
-            listener.getLogger().println("Bonjour, "+name+"!");
+            listener.getLogger().println(message);
         else
-            listener.getLogger().println("Hello, "+name+"!");
+            listener.getLogger().println(message);
         return true;
     }
 
@@ -97,7 +123,7 @@ public class HelloWorldBuilder extends Builder {
          * @return
          *      Indicates the outcome of the validation. This is sent to the browser.
          */
-        public FormValidation doCheckName(@QueryParameter String value)
+        public FormValidation doCheckUsername(@QueryParameter String value)
                 throws IOException, ServletException {
             if (value.length() == 0)
                 return FormValidation.error("Please set a name");
@@ -115,7 +141,7 @@ public class HelloWorldBuilder extends Builder {
          * This human readable name is used in the configuration screen.
          */
         public String getDisplayName() {
-            return "Say hello world";
+            return "Build on Force.com";
         }
 
         @Override
