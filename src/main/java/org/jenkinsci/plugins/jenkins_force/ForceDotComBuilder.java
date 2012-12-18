@@ -5,6 +5,7 @@ import hudson.util.FormValidation;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.AbstractProject;
+import hudson.tasks.Ant;
 import hudson.tasks.Builder;
 import hudson.tasks.BuildStepDescriptor;
 import net.sf.json.JSONObject;
@@ -74,7 +75,7 @@ public class ForceDotComBuilder extends Builder {
     }
 */
     @Override
-    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
+    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         // This is where you 'build' the project.
         // Since this is a dummy, we just say 'hello world' and call that a build.
 
@@ -85,6 +86,14 @@ public class ForceDotComBuilder extends Builder {
             listener.getLogger().println(message);
         else
             listener.getLogger().println(message);
+
+        String properties = "sf.username=" + username + "\n" +
+                            "sf.password=" + password + "\n" +
+                            "sf.serverurl=https://" + env + ".salesforce.com";
+        listener.getLogger().println(properties);
+        Ant antTask = new Ant(task, "", "", "", properties);
+        antTask.perform(build, launcher, listener);
+
         return true;
     }
 
