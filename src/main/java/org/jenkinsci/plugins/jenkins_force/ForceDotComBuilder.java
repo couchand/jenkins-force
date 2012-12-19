@@ -90,7 +90,7 @@ public class ForceDotComBuilder extends Builder {
 
         String tagName = "sf:" + ( task == "pull" ? "retrieve" : "deploy" );
 
-        String buildScript = "<echo level=\"info\">" + tagName + "</echo>";
+        String buildScript = "<" + tagName + " username=\"${sf.username}\" password=\"${sf.password}\" serverurl=\"${sf.serverurl}\" deployroot=\"src\" />";
 
         AntExec antTask = new AntExec(buildScript, "", task, properties, "", "", false, false);
         return antTask.perform(build, launcher, listener);
