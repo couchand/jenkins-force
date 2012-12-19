@@ -98,9 +98,7 @@ public class ForceDotComBuilder extends Builder {
         String buildScript = "<echo level=\"info\">" + tagName + "</echo>";
 
         AntExec antTask = new AntExec(buildScript, "", task, properties, "", "", false, false);
-        antTask.perform(build, launcher, listener);
-
-        return true;
+        return antTask.perform(build, launcher, listener);
     }
 
     // Overridden for better type safety.
