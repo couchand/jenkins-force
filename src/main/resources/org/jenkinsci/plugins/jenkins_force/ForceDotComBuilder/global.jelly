@@ -12,9 +12,9 @@
     so it should be straightforward to find them.
   -->
   <f:section title="Force.com Builder">
-    <f:entry title="French" field="useFrench"
-      description="Check if we should say hello in French">
-      <f:checkbox />
+    <f:entry title="Force.com Metadata Toolkit location" field="sfmtLocation"
+      description="Specify the location of the Force.com Metadata Toolkit">
+      <f:textbox />
     </f:entry>
   </f:section>
 </j:jelly>

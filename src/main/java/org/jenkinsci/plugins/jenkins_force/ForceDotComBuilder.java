@@ -82,18 +82,13 @@ public class ForceDotComBuilder extends Builder {
         // This also shows how you can consult the global configuration of the builder
 	String message = "Login to " + username + ":" + env + ".salesforce.com with password " + password + " for " + task;
 
-        if (getDescriptor().getUseFrench())
-            listener.getLogger().println(message);
-        else
-            listener.getLogger().println(message);
+        listener.getLogger().println(message);
 
         String properties = "sf.username=" + username + "\n" +
                             "sf.password=" + password + "\n" +
                             "sf.serverurl=https://" + env + ".salesforce.com";
-        listener.getLogger().println(properties);
 
         String tagName = "sf:" + ( task == "pull" ? "retrieve" : "deploy" );
-        listener.getLogger().println(tagName);
 
         String buildScript = "<echo level=\"info\">" + tagName + "</echo>";
 
@@ -126,7 +121,7 @@ public class ForceDotComBuilder extends Builder {
          * <p>
          * If you don't want fields to be persisted, use <tt>transient</tt>.
          */
-        private boolean useFrench;
+        private String sfmtLocation;
 
         /**
          * Performs on-the-fly validation of the form field 'name'.
@@ -161,7 +156,7 @@ public class ForceDotComBuilder extends Builder {
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
             // To persist global configuration information,
             // set that to properties and call save().
-            useFrench = formData.getBoolean("useFrench");
+            sfmtLocation = formData.getString("sfmtLocation");
             // ^Can also use req.bindJSON(this, formData);
             //  (easier when there are many fields; need set* methods for this, like setUseFrench)
             save();
@@ -174,8 +169,8 @@ public class ForceDotComBuilder extends Builder {
          * The method name is bit awkward because global.jelly calls this method to determine
          * the initial state of the checkbox by the naming convention.
          */
-        public boolean getUseFrench() {
-            return useFrench;
+        public String getSfmtLocation() {
+            return sfmtLocation;
         }
     }
 }
