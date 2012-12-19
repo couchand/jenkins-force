@@ -5,7 +5,7 @@ import hudson.util.FormValidation;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.AbstractProject;
-import hudson.tasks.Ant;
+import hudson.plugins.antexec.AntExec;
 import hudson.tasks.Builder;
 import hudson.tasks.BuildStepDescriptor;
 import net.sf.json.JSONObject;
@@ -91,7 +91,13 @@ public class ForceDotComBuilder extends Builder {
                             "sf.password=" + password + "\n" +
                             "sf.serverurl=https://" + env + ".salesforce.com";
         listener.getLogger().println(properties);
-        Ant antTask = new Ant(task, "", "", "", properties);
+
+        String tagName = "sf:" + ( task == "pull" ? "retrieve" : "deploy" );
+        listener.getLogger().println(tagName);
+
+        String buildScript = "<echo level=\"info\">" + tagName + "</echo>";
+
+        AntExec antTask = new AntExec(buildScript, "", task, properties, "", "", false, false);
         antTask.perform(build, launcher, listener);
 
         return true;

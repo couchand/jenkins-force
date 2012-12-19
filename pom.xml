@@ -29,8 +29,8 @@
   <dependencies>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
-      <artifactId>ant</artifactId>
-      <version>1.1</version>
+      <artifactId>antexec</artifactId>
+      <version>1.6</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
