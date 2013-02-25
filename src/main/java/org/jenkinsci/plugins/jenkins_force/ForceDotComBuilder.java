@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.jenkins_force;
 import hudson.Launcher;
 import hudson.Extension;
+import hudson.util.ListBoxModel;
 import hudson.util.FormValidation;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
@@ -13,8 +14,12 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.QueryParameter;
 
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import org.jenkinsci.plugins.jenkins_force.ForceDotComUserPassword;
+
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Sample {@link Builder}.
@@ -36,17 +41,13 @@ import java.io.IOException;
 public class ForceDotComBuilder extends Builder {
 
     private final String username;
-    private final String password;
     private final String task;
-    private final String env;
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public ForceDotComBuilder(String task, String username, String password, String env) {
+    public ForceDotComBuilder(String task, String username) {
         this.username = username;
-        this.password = password;
         this.task = task;
-        this.env = env;
     }
 
     /**
@@ -55,34 +56,30 @@ public class ForceDotComBuilder extends Builder {
     public String getUsername() {
         return username;
     }
-    public String getPassword() {
-        return password;
-    }
     public String getTask() {
         return task;
     }
-    public String getEnv() {
-        return env;
-    }
-/*
-    public ListBoxModel doFillTaskItems() {
-        ListBoxModel items = new ListBoxModel();
 
-        items.add("Push", "push");
-        items.add("Pull", "pull");
-
-        return items;
-    }
-*/
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         // This is where you 'build' the project.
         // Since this is a dummy, we just say 'hello world' and call that a build.
 
         // This also shows how you can consult the global configuration of the builder
-	String message = "Login to " + username + ":" + env + ".salesforce.com with password " + password + " for " + task;
+	String message = "Login to " + username + " for " + task;
 
         listener.getLogger().println(message);
+
+        List<ForceDotComUser> creds = CredentialsProvider.lookupCredentials( ForceDotComUser.class );
+
+        for ( ForceDotComUser cred : creds )
+        {
+            message = "credentials " + cred.getUsername() + " description " + cred.getDescription();
+            listener.getLogger().println(message);
+        }
+
+        String password = "pw";
+        String env = "env";
 
         String properties = "sf.username=" + username + "\n" +
                             "sf.password=" + password + "\n" +
@@ -123,6 +120,20 @@ public class ForceDotComBuilder extends Builder {
          */
         private String sfmtLocation;
 
+
+        public ListBoxModel doFillUsernameItems() {
+            ListBoxModel items = new ListBoxModel();
+            items.add( "--Select username--", "" );
+
+            List<ForceDotComUser> creds = CredentialsProvider.lookupCredentials( ForceDotComUser.class );
+
+            for ( ForceDotComUser cred : creds )
+            {
+                items.add( cred.getUsername(), cred.getId() );
+            }
+
+            return items;
+        }
         /**
          * Performs on-the-fly validation of the form field 'name'.
          *

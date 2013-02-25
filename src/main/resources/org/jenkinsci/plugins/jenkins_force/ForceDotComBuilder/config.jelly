@@ -16,15 +16,7 @@
     </select>
   </f:entry>
   <f:entry title="Username" field="username">
-    <f:textbox />
-  </f:entry>
-  <f:entry title="Password" field="password">
-    <f:textbox />
-  </f:entry>
-  <f:entry title="Environment" field="env">
-    <select name="env">
-      <option value="login">Production</option>
-      <option value="test">Sandbox</option>
-    </select>
+    <f:select field="username">
+    </f:select>
   </f:entry>
 </j:jelly>
