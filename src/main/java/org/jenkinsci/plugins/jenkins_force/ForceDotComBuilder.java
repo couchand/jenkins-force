@@ -1,4 +1,6 @@
 package org.jenkinsci.plugins.jenkins_force;
+import hudson.*;
+import hudson.model.*;
 import hudson.Launcher;
 import hudson.Extension;
 import hudson.util.ListBoxModel;
@@ -6,8 +8,8 @@ import hudson.util.FormValidation;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.AbstractProject;
-import hudson.plugins.antexec.AntExec;
 import hudson.tasks.Builder;
+import hudson.tasks.Ant;
 import hudson.tasks.BuildStepDescriptor;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -66,30 +68,57 @@ public class ForceDotComBuilder extends Builder {
         // Since this is a dummy, we just say 'hello world' and call that a build.
 
         // This also shows how you can consult the global configuration of the builder
-	String message = "Login to " + username + " for " + task;
 
-        listener.getLogger().println(message);
+        List<ForceDotComUserPassword> creds = CredentialsProvider.lookupCredentials( ForceDotComUserPassword.class );
 
-        List<ForceDotComUser> creds = CredentialsProvider.lookupCredentials( ForceDotComUser.class );
+        String un = "";
+        String pw = "";
+        String env = "login";
 
-        for ( ForceDotComUser cred : creds )
+        for ( ForceDotComUserPassword cred : creds )
         {
-            message = "credentials " + cred.getUsername() + " description " + cred.getDescription();
-            listener.getLogger().println(message);
+            if ( !cred.getId().equals( username ) )
+            {
+                continue;
+            }
+
+            un = cred.getUsername();
+            pw = cred.getPassword().getPlainText();
+//            env = cred.getEnvironment();
         }
 
-        String password = "pw";
-        String env = "env";
+	String message = "Login to " + un + " for " + task;
+        listener.getLogger().println(message);
 
-        String properties = "sf.username=" + username + "\n" +
-                            "sf.password=" + password + "\n" +
+        String properties = "sf.username=" + un + "\n" +
+                            "sf.password=" + pw + "\n" +
                             "sf.serverurl=https://" + env + ".salesforce.com";
 
-        String tagName = "sf:" + ( task == "pull" ? "retrieve" : "deploy" );
+        String packageContents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+        packageContents += "<Package xmlns=\"http://soap.sforce.com/2006/04/metadata\">";
+        packageContents += "<types>";
+        packageContents += "<members>*</members>";
+        packageContents += "<name>ApexClass</name>";
+        packageContents += "</types>";
+        packageContents += "</Package>";
 
-        String buildScript = "<" + tagName + " username=\"${sf.username}\" password=\"${sf.password}\" serverurl=\"${sf.serverurl}\" deployroot=\"src\" />";
+        FilePath srcDir = build.getModuleRoot().createTempDir( "fdc", "src" );
+        FilePath packageFile = srcDir.createTextTempFile( "package", ".xml", packageContents );
+        String packageXml = srcDir.getName() + '/' + packageFile.getName();
 
-        AntExec antTask = new AntExec(buildScript, "", task, properties, "", "", false, false);
+//        String tagName = "sf:" + ( task.equals("pull") ? "retrieve" : "deploy" );
+        String tagName = "sf:retrieve";
+
+        String buildScript = "<project basedir=\".\" xmlns:sf=\"antlib:com.salesforce\">";
+        buildScript += "<target name=\"" + task + "\">";
+        buildScript += "<" + tagName + " username=\"${sf.username}\" password=\"${sf.password}\" serverurl=\"${sf.serverurl}\" ";
+        buildScript += "retrieveTarget=\"" + srcDir.getName() + "\"  unpackaged=\"" + packageXml + "\"/>";
+        buildScript += "</target>";
+        buildScript += "</project>";
+        FilePath buildFile = build.getModuleRoot().createTextTempFile( "fdcbuild", ".xml", buildScript );
+
+
+        Ant antTask = new Ant(task, "", "", buildFile.getName(), properties);
         return antTask.perform(build, launcher, listener);
     }
 
