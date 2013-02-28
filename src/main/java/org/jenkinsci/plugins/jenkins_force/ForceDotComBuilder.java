@@ -94,6 +94,7 @@ public class ForceDotComBuilder extends Builder {
                             "sf.password=" + pw + "\n" +
                             "sf.serverurl=https://" + env + ".salesforce.com";
 
+        /*
         String packageContents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
         packageContents += "<Package xmlns=\"http://soap.sforce.com/2006/04/metadata\">";
         packageContents += "<types>";
@@ -105,17 +106,18 @@ public class ForceDotComBuilder extends Builder {
         FilePath srcDir = build.getModuleRoot().createTempDir( "fdc", "src" );
         FilePath packageFile = srcDir.createTextTempFile( "package", ".xml", packageContents );
         String packageXml = srcDir.getName() + '/' + packageFile.getName();
+        */
 
         FilePath propertyFile = build.getModuleRoot().createTextTempFile( "build", ".properties", properties );
 
-//        String tagName = "sf:" + ( task.equals("pull") ? "retrieve" : "deploy" );
-        String tagName = "sf:retrieve";
+        String checkOnly = task.equals("validate") ? "true" : "false";
 
         String buildScript = "<project basedir=\".\" xmlns:sf=\"antlib:com.salesforce\">";
         buildScript += "<property file=\"" + propertyFile.getName() + "\"/>";
         buildScript += "<target name=\"" + task + "\">";
-        buildScript += "<" + tagName + " username=\"${sf.username}\" password=\"${sf.password}\" serverurl=\"${sf.serverurl}\" ";
-        buildScript += "retrieveTarget=\"" + srcDir.getName() + "\"  unpackaged=\"" + packageXml + "\"/>";
+        buildScript += "<sf:deploy username=\"${sf.username}\" password=\"${sf.password}\" serverurl=\"${sf.serverurl}\" ";
+        buildScript += "deployRoot=\"src\" runAllTests=\"true\" checkOnly=\"" + checkOnly + "\"/>";
+//        buildScript += "retrieveTarget=\"" + srcDir.getName() + "\"  unpackaged=\"" + packageXml + "\"/>";
         buildScript += "</target>";
         buildScript += "</project>";
         FilePath buildFile = build.getModuleRoot().createTextTempFile( "fdcbuild", ".xml", buildScript );
