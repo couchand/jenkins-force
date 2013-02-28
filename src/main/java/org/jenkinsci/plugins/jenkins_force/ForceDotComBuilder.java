@@ -106,10 +106,13 @@ public class ForceDotComBuilder extends Builder {
         FilePath packageFile = srcDir.createTextTempFile( "package", ".xml", packageContents );
         String packageXml = srcDir.getName() + '/' + packageFile.getName();
 
+        FilePath propertyFile = build.getModuleRoot().createTextTempFile( "build", ".properties", properties );
+
 //        String tagName = "sf:" + ( task.equals("pull") ? "retrieve" : "deploy" );
         String tagName = "sf:retrieve";
 
         String buildScript = "<project basedir=\".\" xmlns:sf=\"antlib:com.salesforce\">";
+        buildScript += "<property file=\"" + propertyFile.getName() + "\"/>";
         buildScript += "<target name=\"" + task + "\">";
         buildScript += "<" + tagName + " username=\"${sf.username}\" password=\"${sf.password}\" serverurl=\"${sf.serverurl}\" ";
         buildScript += "retrieveTarget=\"" + srcDir.getName() + "\"  unpackaged=\"" + packageXml + "\"/>";
@@ -118,7 +121,7 @@ public class ForceDotComBuilder extends Builder {
         FilePath buildFile = build.getModuleRoot().createTextTempFile( "fdcbuild", ".xml", buildScript );
 
 
-        Ant antTask = new Ant(task, "", "", buildFile.getName(), properties);
+        Ant antTask = new Ant(task, "", "", buildFile.getName(), "");
         return antTask.perform(build, launcher, listener);
     }
 
