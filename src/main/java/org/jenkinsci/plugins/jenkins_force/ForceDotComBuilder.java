@@ -120,9 +120,12 @@ public class ForceDotComBuilder extends Builder {
         buildScript += "</project>";
         FilePath buildFile = build.getModuleRoot().createTextTempFile( "fdcbuild", ".xml", buildScript );
 
-
         Ant antTask = new Ant(task, "", "", buildFile.getName(), "");
-        return antTask.perform(build, launcher, listener);
+        boolean success = antTask.perform(build, launcher, listener);
+
+        propertyFile.delete();
+
+        return success;
     }
 
     // Overridden for better type safety.
