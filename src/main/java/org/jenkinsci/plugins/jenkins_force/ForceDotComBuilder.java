@@ -116,6 +116,7 @@ public class ForceDotComBuilder extends Builder {
         buildScript += "<property file=\"" + propertyFile.getName() + "\"/>";
         buildScript += "<target name=\"" + task + "\">";
         buildScript += "<sf:deploy username=\"${sf.username}\" password=\"${sf.password}\" serverurl=\"${sf.serverurl}\" ";
+        buildScript += "pollWaitMillis=\"60000\" maxPoll=\"30\" ";
         buildScript += "deployRoot=\"src\" runAllTests=\"true\" checkOnly=\"" + checkOnly + "\"/>";
 //        buildScript += "retrieveTarget=\"" + srcDir.getName() + "\"  unpackaged=\"" + packageXml + "\"/>";
         buildScript += "</target>";
