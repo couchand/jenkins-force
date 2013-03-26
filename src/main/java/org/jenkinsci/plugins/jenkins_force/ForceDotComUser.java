@@ -9,4 +9,5 @@ public interface ForceDotComUser extends Credentials
     String getUsername();
     String getDescription();
     String getId();
+    String getEnv();
 }

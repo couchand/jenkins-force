@@ -84,7 +84,7 @@ public class ForceDotComBuilder extends Builder {
 
             un = cred.getUsername();
             pw = cred.getPassword().getPlainText();
-//            env = cred.getEnvironment();
+            env = cred.getEnv();
         }
 
 	String message = "Login to " + un + " for " + task;
