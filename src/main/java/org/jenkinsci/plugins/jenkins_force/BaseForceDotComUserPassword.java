@@ -4,6 +4,7 @@ import com.cloudbees.plugins.credentials.CredentialsDescriptor;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 
 import hudson.Extension;
+import hudson.util.ListBoxModel;
 import hudson.util.Secret;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -28,6 +29,15 @@ public class BaseForceDotComUserPassword extends BaseForceDotComUser implements 
     @Extension
     public static class DescriptorImpl extends CredentialsDescriptor
     {
+        public ListBoxModel doFillEnvItems() {
+            ListBoxModel items = new ListBoxModel();
+
+            items.add( "Production", "login" );
+            items.add( "Sandbox", "test" );
+
+            return items;
+        }
+
         @Override
         public String getDisplayName()
         {

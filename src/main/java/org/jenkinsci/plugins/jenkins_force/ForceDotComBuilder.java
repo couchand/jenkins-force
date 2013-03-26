@@ -158,7 +158,6 @@ public class ForceDotComBuilder extends Builder {
          */
         private String sfmtLocation;
 
-
         public ListBoxModel doFillUsernameItems() {
             ListBoxModel items = new ListBoxModel();
             items.add( "--Select username--", "" );
@@ -172,6 +171,16 @@ public class ForceDotComBuilder extends Builder {
 
             return items;
         }
+
+        public ListBoxModel doFillTaskItems() {
+            ListBoxModel items = new ListBoxModel();
+
+            items.add( "Validate", "validate" );
+            items.add( "Deploy", "deploy" );
+
+            return items;
+        }
+
         /**
          * Performs on-the-fly validation of the form field 'name'.
          *

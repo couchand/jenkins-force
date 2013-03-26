@@ -10,13 +10,9 @@
     When submitted, it will be passed to the corresponding constructor parameter.
   -->
   <f:entry title="Task" field="task">
-    <select name="task">
-      <option value="validate">Validate</option>
-      <option value="deploy">Deploy</option>
-    </select>
+    <f:select/>
   </f:entry>
   <f:entry title="Username" field="username">
-    <f:select field="username">
-    </f:select>
+    <f:select/>
   </f:entry>
 </j:jelly>
