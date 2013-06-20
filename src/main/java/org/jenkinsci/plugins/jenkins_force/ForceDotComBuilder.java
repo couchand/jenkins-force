@@ -111,13 +111,13 @@ public class ForceDotComBuilder extends Builder {
         FilePath propertyFile = build.getModuleRoot().createTextTempFile( "build", ".properties", properties );
 
         String checkOnly = task.equals("validate") ? "true" : "false";
-        String runTests = task.equals("push") ? "false" : "true";
+        String runTests = task.equals("push") || env.equals("login") ? "false" : "true";
 
         String buildScript = "<project basedir=\".\" xmlns:sf=\"antlib:com.salesforce\">";
         buildScript += "<property file=\"" + propertyFile.getName() + "\"/>";
         buildScript += "<target name=\"" + task + "\">";
         buildScript += "<sf:deploy username=\"${sf.username}\" password=\"${sf.password}\" serverurl=\"${sf.serverurl}\" ";
-        buildScript += "pollWaitMillis=\"60000\" maxPoll=\"30\" ";
+        buildScript += "pollWaitMillis=\"60000\" maxPoll=\"90\" ";
         buildScript += "deployRoot=\"src\" runAllTests=\"" + runTests + "\" checkOnly=\"" + checkOnly + "\"/>";
 //        buildScript += "retrieveTarget=\"" + srcDir.getName() + "\"  unpackaged=\"" + packageXml + "\"/>";
         buildScript += "</target>";
