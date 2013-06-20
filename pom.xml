@@ -42,6 +42,6 @@
   <properties>
   <!--  explicitly specifying the latest version here because one we get from the parent POM
         tends to lag behind a bit -->
-    <maven-hpi-plugin.version>1.95</maven-hpi-plugin.version>
+    <maven-hpi-plugin.version>1.90</maven-hpi-plugin.version>
   </properties>
 </project>
