@@ -36,7 +36,7 @@ import java.util.List;
  *
  * <p>
  * When a build is performed, the {@link #perform(AbstractBuild, Launcher, BuildListener)}
- * method will be invoked. 
+ * method will be invoked.
  *
  * @author Kohsuke Kawaguchi
  */
@@ -44,12 +44,15 @@ public class ForceDotComBuilder extends Builder {
 
     private final String username;
     private final String task;
+    private final String runtests;
+
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public ForceDotComBuilder(String task, String username) {
+    public ForceDotComBuilder(String task, String username, String runtests) {
         this.username = username;
         this.task = task;
+        this.runtests = runtests;
     }
 
     /**
@@ -61,6 +64,10 @@ public class ForceDotComBuilder extends Builder {
     public String getTask() {
         return task;
     }
+    public String getRuntests() {
+        return runtests;
+    }
+
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
@@ -111,14 +118,14 @@ public class ForceDotComBuilder extends Builder {
         FilePath propertyFile = build.getModuleRoot().createTextTempFile( "build", ".properties", properties );
 
         String checkOnly = task.equals("validate") ? "true" : "false";
-        String runTests = task.equals("push") || env.equals("login") ? "false" : "true";
+        String runAllTests = "false".equals(runtests) ? "false" : "true";
 
         String buildScript = "<project basedir=\".\" xmlns:sf=\"antlib:com.salesforce\">";
         buildScript += "<property file=\"" + propertyFile.getName() + "\"/>";
         buildScript += "<target name=\"" + task + "\">";
         buildScript += "<sf:deploy username=\"${sf.username}\" password=\"${sf.password}\" serverurl=\"${sf.serverurl}\" ";
         buildScript += "pollWaitMillis=\"60000\" maxPoll=\"90\" ";
-        buildScript += "deployRoot=\"src\" runAllTests=\"" + runTests + "\" checkOnly=\"" + checkOnly + "\"/>";
+        buildScript += "deployRoot=\"src\" runAllTests=\"" + runAllTests + "\" checkOnly=\"" + checkOnly + "\"/>";
 //        buildScript += "retrieveTarget=\"" + srcDir.getName() + "\"  unpackaged=\"" + packageXml + "\"/>";
         buildScript += "</target>";
         buildScript += "</project>";
@@ -183,6 +190,15 @@ public class ForceDotComBuilder extends Builder {
             return items;
         }
 
+        public ListBoxModel doFillRuntestsItems() {
+            ListBoxModel items = new ListBoxModel();
+
+            items.add( "True", "true" );
+            items.add( "False", "false" );
+
+            return items;
+        }
+
         /**
          * Performs on-the-fly validation of the form field 'name'.
          *
@@ -201,7 +217,7 @@ public class ForceDotComBuilder extends Builder {
         }
 
         public boolean isApplicable(Class<? extends AbstractProject> aClass) {
-            // Indicates that this builder can be used with all kinds of project types 
+            // Indicates that this builder can be used with all kinds of project types
             return true;
         }
 
