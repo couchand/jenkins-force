@@ -12,6 +12,9 @@
   <f:entry title="Task" field="task">
     <f:select/>
   </f:entry>
+  <f:entry title="Run Tests" field="runtests">
+    <f:select/>
+  </f:entry>
   <f:entry title="Username" field="username">
     <f:select/>
   </f:entry>
